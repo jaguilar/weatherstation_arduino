@@ -58,7 +58,6 @@ void SetupWindvane() {
   ha_windvane.setName("Windvane");
   ha_windvane.setDeviceClass("enum");
   ha_windvane.setForceUpdate(true);
-  ha_windvane.setStateClass("");
   ha_windvane.setJsonAttributes(
       "options: \"{{['NE', 'E', 'SE', 'S', 'SW', 'W', 'NW', 'N', 'NNE', "
       "'ENE', 'ESE', 'SSE', 'SSW', 'WSW', 'WNW', 'NNW']}}\" ");
