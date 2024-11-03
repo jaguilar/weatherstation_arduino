@@ -121,12 +121,9 @@ class ScaledSamplePinCounter {
     // Each time the pin goes low, increment the counter. The counter
     // naturally debounces due to the maximum update frequency.
     pinMode(pin_, INPUT_PULLUP);
-
-    Serial1.printf("attaching interrupted to %d\n", pin_);
     attachInterruptParam(
         pin_,
         +[](void* counter) {
-          Serial1.print("interrupt!\n");
           reinterpret_cast<RateLimitedCounter*>(counter)->Inc();
         },
         FALLING, &counter_);
