@@ -178,6 +178,7 @@ void SetupAnemometer() {
   anemometer.setDeviceClass("wind_speed");
   anemometer.setStateClass("measurement");
   anemometer.setForceUpdate(true);
+  wind_counter.begin();
 }
 
 HASensor rain_sensor("rg");
@@ -202,6 +203,7 @@ void SetupRainGauge() {
   rain_sensor.setDeviceClass("precipitation");
   rain_sensor.setStateClass("total_increasing");
   rain_sensor.setForceUpdate(true);
+  rain_counter.begin();
 }
 
 #define SSTR(s) (#s)
@@ -209,6 +211,9 @@ void SetupRainGauge() {
 
 void setup() {
   ha_device.setName("Weatherstation");
+  ha_device.enableSharedAvailability();
+  ha_device.enableLastWill();
+  ha_device.setAvailability(true);
   ha_device.enableExtendedUniqueIds();
 
   Serial1.begin();
@@ -226,9 +231,6 @@ void setup() {
   SetupWindvane();
   SetupRainGauge();
   SetupAnemometer();
-  ha_device.enableSharedAvailability();
-  ha_device.enableLastWill();
-  ha_device.setAvailability(true);
 
   IPAddress mqtt_addr;
   if (!mqtt_addr.fromString(STR(MQTT_HOST))) {
@@ -241,6 +243,7 @@ void setup() {
   static auto mqtt_lock = xSemaphoreCreateMutex();
   xTaskCreate(
       [](void*) {
+        vTaskCoreAffinitySet(xTaskGetCurrentTaskHandle(), 0b1);
         while (true) {
           xSemaphoreTake(mqtt_lock, portMAX_DELAY);
           mqtt.loop();
@@ -257,14 +260,7 @@ void setup() {
     xSemaphoreTake(mqtt_lock, portMAX_DELAY);
   }
   xSemaphoreGive(mqtt_lock);
-
   Serial1.printf("MQTT up\n");
-
-  // Something in the MQTT or LWIP code causes our interrupt handlers to be
-  // deleted if we set them up before starting MQTT. If we set them up after
-  // then it's all good.
-  wind_counter.begin();
-  rain_counter.begin();
 };
 
 void loop() { delay(10000); }
