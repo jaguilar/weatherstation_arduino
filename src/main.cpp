@@ -96,8 +96,8 @@ class ScaledSamplePinCounter {
   static constexpr int32_t CalcCounterUpdatePeriodMs(float scale,
                                                      float max_value,
                                                      float period_length_s) {
-    const float max_units_per_s = max_value / period_length_s;
-    const float max_ticks_per_s = scale * max_units_per_s;
+    const float max_ticks_per_period = max_value / scale;
+    const float max_ticks_per_s = max_ticks_per_period / period_length_s;
     return 1000 / max_ticks_per_s;
   }
 
