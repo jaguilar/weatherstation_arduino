@@ -232,13 +232,8 @@ void setup() {
   SetupRainGauge();
   SetupAnemometer();
 
-  IPAddress mqtt_addr;
-  if (!mqtt_addr.fromString(STR(MQTT_HOST))) {
-    Serial1.printf("%s is not a valid IP address\n", STR(MQTT_HOST));
-    return;
-  }
-  Serial1.printf("mqtt.begin %s\n", mqtt_addr.toString().c_str());
-  mqtt.begin(mqtt_addr, STR(MQTT_USER), STR(MQTT_PASSWORD));
+  Serial1.printf("mqtt.begin %s\n", STR(MQTT_HOSTNAME));
+  mqtt.begin(STR(MQTT_HOSTNAME), STR(MQTT_USER), STR(MQTT_PASSWORD));
 
   static auto mqtt_lock = xSemaphoreCreateMutex();
   xTaskCreate(
